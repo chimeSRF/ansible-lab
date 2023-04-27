@@ -16,7 +16,7 @@ services:
             interfaces:
             - name: "GigabitEthernet4"
               ip: "192.168.2.1 255.255.255.0"
-        edge-C:
+        side-C:
             interfaces:
             - name: "GigabitEthernet4"
               ip: "192.168.3.1 255.255.255.0"

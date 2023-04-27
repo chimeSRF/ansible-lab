@@ -26,7 +26,7 @@
     - name: configure interfaces
       cisco.ios.ios_config:
         lines:
-          #- "interface {{ item.1.name }}"
+          - "interface {{ item.1.name }}"
           - "vrf forwarding {{ item.0.name }}"
           - "ip address {{ item.1.ip }}"
           - "no shutdown"
@@ -34,6 +34,21 @@
         parents:
           - "interface {{ item.1.name }}"
       loop: "{{ services | nested_service_interfaces }}"
+      when: "'.' not in item.1.name"
+ 
+    - name: configure interfaces with encapsulation
+      cisco.ios.ios_config:
+        lines:
+          - "interface {{ item.1.name }}"
+          - "encapsulation dot1Q 100"
+          - "vrf forwarding {{ item.0.name }}"
+          - "ip address {{ item.1.ip }}"
+          - "no shutdown"
+          - "exit"
+        parents:
+          - "interface {{ item.1.name }}"
+      loop: "{{ services | nested_service_interfaces }}"
+      when: "'.' in item.1.name"
 
     - name: configure bgps
       cisco.ios.ios_config:
