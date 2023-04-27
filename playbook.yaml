@@ -4,6 +4,9 @@
   hosts: edge
   vars_files:
     - host_vars/edge01.yaml
+    - host_vars/edge02.yaml
+    - host_vars/edge03.yaml
+    - host_vars/edge04.yaml
     - services.yaml
   tasks:
     - name: configure vrf
@@ -29,7 +32,12 @@
           - "exit"
         parents:
           - "interface {{ item.1.name }}"
-      loop: "{{ services | subelements('sides') }}"
+      loop: "{{ services }}"
+      loop_control:
+        loop_var: item
+      vars:
+        interfaces: "{{ item.sides|dict2items|map(attribute='value.interfaces.0')|list }}"
+
     - name: configure bgps
       cisco.ios.ios_config:
         lines:
