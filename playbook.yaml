@@ -1,0 +1,43 @@
+---
+- name: configure vrfs for customers
+  gather_facts: false
+  hosts: edge
+  vars_files:
+    - host_vars/edge01.yaml
+    - services.yaml
+  tasks:
+    - name: configure vrf
+      cisco.ios.ios_config:
+        lines:
+          - "vrf definition {{ item.name }}"
+          - "rd {{ router_loopback }}:{{ item.id }}"
+          - "route-target export {{ item.route_export[0] }}"
+          - "route-target import {{ item.route_import[0] }}"
+          - "address-family ipv4"
+          - "exit-address-family"
+          - "exit" 
+        parents: 
+          - "vrf definition {{ item.name }}"
+      loop: "{{ services }}"
+    - name: configure interfaces
+      cisco.ios.ios_config:
+        lines:
+          - "interface {{ item.1.name }}"
+          - "vrf forwarding {{ item.0.name }}"
+          - "ip address {{ item.1.ip }}"
+          - "no shutdown"
+          - "exit"
+        parents:
+          - "interface {{ item.1.name }}"
+      loop: "{{ services | subelements('sides') }}"
+    - name: configure bgps
+      cisco.ios.ios_config:
+        lines:
+          - "router bgp 65000"
+          - "address-family ipv4 vrf {{ item.name }}"
+          - "redistribute connected"
+          - "exit-address-family"
+          - "exit"
+        parents:
+          - "router bgp 65000"
+      loop: "{{ services }}"

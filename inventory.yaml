@@ -1,17 +1,22 @@
 all:
   children:
     router:
-      core:
-        core01:
-          ansible_host: '10.18.10.3'
-        core02:
-          ansible_host: '10.18.10.25'
-      edge:
-        edge01:
-          ansible_host: '10.18.10.88'
-        edge02:
-          ansible_host: '10.18.10.22'
-        edge03:
-          ansible_host: '10.18.10.73'
-        edge04:
-          ansible_host: '10.18.10.138'
+      children:
+        core:
+          hosts:
+            core01:
+              ansible_host: 10.18.10.3
+            core02:
+              ansible_host: 10.18.10.25
+        edge:
+          hosts:
+            edge01:
+              ansible_host: 10.18.10.88
+            edge02:
+              ansible_host: 10.18.10.22
+            edge03:
+              ansible_host: 10.18.10.73
+            edge04:
+              ansible_host: 10.18.10.138
+      vars:
+        ansible_user: cisco
