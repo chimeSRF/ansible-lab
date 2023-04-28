@@ -1,0 +1,9 @@
+---
+- name: configure vrfs for customers
+  gather_facts: false
+  hosts: edge
+  vars_files:
+    - host_vars/edge_routers.yaml
+    - services.yaml
+  tasks:
+    

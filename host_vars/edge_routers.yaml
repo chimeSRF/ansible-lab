@@ -1,0 +1,20 @@
+edge_routers:  
+  edge01:
+    ip_address: 10.18.10.88
+    router_loopback: 100.64.1.5
+    router_side: "side-A"
+
+  edge02:
+    ip_address: 10.18.10.22
+    router_loopback: 100.64.1.6
+    router_side: "side-A"
+
+  edge03:
+    ip_address: 10.18.10.73
+    router_loopback: 100.64.1.3
+    router_side: "side-B"
+
+  edge04:
+    ip_address: 10.18.10.138
+    router_loopback: 100.64.1.4
+    router_side: "side-C"

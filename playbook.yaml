@@ -3,23 +3,20 @@
   gather_facts: false
   hosts: edge
   vars_files:
-    - host_vars/edge01.yaml
-    - host_vars/edge02.yaml
-    - host_vars/edge03.yaml
-    - host_vars/edge04.yaml
+    - host_vars/edge_routers.yaml
     - services.yaml
   tasks:
     - name: configure vrf
       cisco.ios.ios_config:
         lines:
-          #- "vrf definition {{ item.name }}"
-          - "rd {{ router_loopback }}:{{ item.id }}"
+          - "vrf definition {{ item.name }}"
+          - "rd {{ edge_routers[inventory_hostname].router_loopback }}:{{ item.id }}"
           - "route-target export {{ item.route_export[0] }}"
           - "route-target import {{ item.route_import[0] }}"
           - "address-family ipv4"
           - "exit-address-family"
-          - "exit" 
-        parents: 
+          - "exit"
+        parents:
           - "vrf definition {{ item.name }}"
       loop: "{{ services }}"
 
@@ -33,9 +30,9 @@
           - "exit"
         parents:
           - "interface {{ item.1.name }}"
-      loop: "{{ services | nested_service_interfaces }}"
+      loop: "{{ services | filter_router_interfaces(edge_routers[inventory_hostname].router_side) }}"
       when: "'.' not in item.1.name"
- 
+
     - name: configure interfaces with encapsulation
       cisco.ios.ios_config:
         lines:
@@ -47,7 +44,7 @@
           - "exit"
         parents:
           - "interface {{ item.1.name }}"
-      loop: "{{ services | nested_service_interfaces }}"
+      loop: "{{ services | filter_router_interfaces(edge_routers[inventory_hostname].router_side) }}"
       when: "'.' in item.1.name"
 
     - name: configure bgps
